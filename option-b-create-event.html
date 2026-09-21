@@ -1,1 +1,418 @@
-<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>Option B — Create Event</title><style>body{font:15px system-ui;background:#0b0d12;color:#e8ecf4;margin:auto;padding:16px;max-width:520px}.hero,.card{background:#161a24;border:1px solid #2a3142;border-radius:14px;padding:16px;margin:10px 0}button{padding:12px;border:0;border-radius:10px;background:#7c6cff;color:#fff;margin:4px}</style><h1>Club hub</h1><div class=hero><h2>Create event</h2><p>Option B · hub + task cards</p><button onclick="document.querySelector('#flow').hidden=false">Start create</button></div><div id=flow hidden><div class=card><h2>A · Story</h2><input placeholder="Title" style="padding:12px;width:90%"><p><button onclick="this.textContent='Saved · next card'">Next card</button></p></div></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Option B — Hub + Create Cards</title>
+<style>
+/* CampusMeet Admin+Club IA mockups — Whisperflow-dark, frontend-only */
+:root {
+  --bg: #0b0d12;
+  --bg2: #12151c;
+  --bg3: #1a1f2b;
+  --card: #161a24;
+  --line: #2a3142;
+  --text: #e8ecf4;
+  --muted: #9aa3b5;
+  --faint: #6b7385;
+  --accent: #7c6cff;
+  --accent2: #5eead4;
+  --warn: #fbbf24;
+  --danger: #f87171;
+  --ok: #34d399;
+  --radius: 14px;
+  --shadow: 0 12px 40px rgba(0,0,0,.45);
+  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--font); }
+a { color: var(--accent2); text-decoration: none; }
+button, input, select, textarea { font: inherit; }
+.app {
+  max-width: 1100px; margin: 0 auto; min-height: 100vh;
+  display: grid; grid-template-columns: 1fr;
+}
+@media (min-width: 900px) {
+  .app.with-rail { grid-template-columns: 220px 1fr; }
+}
+.rail {
+  background: var(--bg2); border-right: 1px solid var(--line);
+  padding: 18px 14px; display: none;
+}
+@media (min-width: 900px) { .rail { display: block; } }
+.rail .brand { font-weight: 700; letter-spacing: .02em; margin-bottom: 18px; }
+.rail .brand span { color: var(--accent2); }
+.rail nav a, .rail nav button.navitem {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; text-align: left; background: transparent; border: 0;
+  color: var(--muted); padding: 10px 12px; border-radius: 10px; cursor: pointer; margin-bottom: 4px;
+}
+.rail nav a.active, .rail nav button.navitem.active, .rail nav a:hover, .rail nav button.navitem:hover {
+  background: var(--bg3); color: var(--text);
+}
+.badge {
+  background: var(--accent); color: white; font-size: 11px; font-weight: 700;
+  border-radius: 999px; padding: 2px 7px; min-width: 20px; text-align: center;
+}
+.top {
+  position: sticky; top: 0; z-index: 20; backdrop-filter: blur(10px);
+  background: rgba(11,13,18,.85); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+}
+.top .title { font-weight: 650; flex: 1; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg3); border: 1px solid var(--line); color: var(--muted);
+  border-radius: 999px; padding: 6px 12px; font-size: 12px; cursor: pointer;
+}
+.chip.on { color: var(--text); border-color: var(--accent); background: #1d1a33; }
+.main { padding: 16px; max-width: 780px; margin: 0 auto; width: 100%; }
+.main.wide { max-width: 1100px; }
+.phone {
+  max-width: 390px; margin: 0 auto; border: 1px solid var(--line);
+  border-radius: 24px; overflow: hidden; background: var(--bg);
+  box-shadow: var(--shadow);
+}
+.desk-wrap { display: grid; gap: 20px; }
+@media (min-width: 900px) {
+  .desk-wrap { grid-template-columns: 390px 1fr; align-items: start; }
+}
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px; margin-bottom: 12px;
+}
+.card h2, .card h3 { margin: 0 0 8px; font-size: 16px; }
+.muted { color: var(--muted); font-size: 13px; line-height: 1.45; }
+.faint { color: var(--faint); font-size: 12px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+label.field { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--muted); }
+label.field input, label.field select, label.field textarea {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+  color: var(--text); padding: 11px 12px; outline: none;
+}
+label.field input:focus, label.field select:focus, label.field textarea:focus {
+  border-color: var(--accent);
+}
+.btn {
+  appearance: none; border: 0; border-radius: 12px; padding: 11px 16px;
+  font-weight: 650; cursor: pointer; background: var(--bg3); color: var(--text);
+}
+.btn.primary { background: linear-gradient(135deg, var(--accent), #5b8cff); color: white; }
+.btn.ghost { background: transparent; border: 1px solid var(--line); }
+.btn.ok { background: #0f3d2e; color: var(--ok); border: 1px solid #1f6b4f; }
+.btn.danger { background: #3a1515; color: var(--danger); border: 1px solid #6b2a2a; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.stepper { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 8px; }
+.stepper .s {
+  flex: 0 0 auto; font-size: 11px; padding: 6px 10px; border-radius: 999px;
+  background: var(--bg3); color: var(--faint); border: 1px solid transparent;
+}
+.stepper .s.on { color: var(--text); border-color: var(--accent); background: #1d1a33; }
+.stepper .s.done { color: var(--accent2); }
+.footer-bar {
+  position: sticky; bottom: 0; display: flex; gap: 8px; padding: 12px 0 4px;
+  background: linear-gradient(transparent, var(--bg) 30%);
+}
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+  background: #10231f; border: 1px solid #1f6b4f; color: var(--ok);
+  padding: 12px 16px; border-radius: 12px; opacity: 0; pointer-events: none;
+  transition: .25s ease; z-index: 50; font-size: 13px; box-shadow: var(--shadow);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.adv {
+  border: 1px dashed var(--line); border-radius: 12px; padding: 10px 12px; margin-top: 8px;
+}
+.adv summary { cursor: pointer; color: var(--accent2); font-size: 13px; font-weight: 600; }
+.pill { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: var(--bg3); color: var(--muted); }
+.pill.pending { background: #3a2e10; color: var(--warn); }
+.pill.approved { background: #0f3d2e; color: var(--ok); }
+.pill.rejected { background: #3a1515; color: var(--danger); }
+.pill.needs { background: #1a2740; color: #93c5fd; }
+.list-item {
+  display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 12px;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--bg2);
+  cursor: pointer; margin-bottom: 8px;
+}
+.list-item:hover { border-color: var(--accent); }
+.drawer {
+  position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; z-index: 40;
+  align-items: flex-end; justify-content: center;
+}
+.drawer.open { display: flex; }
+.drawer .panel {
+  width: min(520px, 100%); max-height: 85vh; overflow: auto;
+  background: var(--bg2); border-radius: 18px 18px 0 0; padding: 18px;
+  border: 1px solid var(--line); box-shadow: var(--shadow);
+}
+@media (min-width: 900px) {
+  .drawer { align-items: center; }
+  .drawer .panel { border-radius: 18px; }
+}
+.kanban {
+  display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory;
+}
+.kanban .col {
+  flex: 0 0 260px; scroll-snap-align: start; background: var(--bg2);
+  border: 1px solid var(--line); border-radius: 14px; padding: 10px; min-height: 360px;
+}
+.kanban .col h3 { margin: 0 0 10px; font-size: 13px; color: var(--muted); display:flex; justify-content:space-between; }
+.kcard {
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px; margin-bottom: 8px; cursor: grab;
+}
+.hero {
+  background: linear-gradient(145deg, #1a1440, #0f2a28);
+  border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin-bottom: 12px;
+}
+.task {
+  display: flex; gap: 12px; align-items: flex-start; padding: 14px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--card); margin-bottom: 8px; cursor: pointer;
+}
+.task .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--warn); margin-top: 5px; }
+.task.done .dot { background: var(--ok); }
+.mode {
+  border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: var(--card);
+  cursor: pointer; margin-bottom: 10px;
+}
+.mode:hover, .mode.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.banner-fake {
+  height: 120px; border-radius: 12px; border: 1px dashed var(--line);
+  display: flex; align-items: center; justify-content: center; color: var(--muted);
+  background: repeating-linear-gradient(45deg, #141821, #141821 10px, #181d28 10px, #181d28 20px);
+}
+.banner-fake.has { background: linear-gradient(120deg, #4338ca, #0f766e); color: white; border-style: solid; font-weight: 700; }
+.note {
+  font-size: 11px; color: var(--faint); margin: 8px 0 0; padding: 8px 10px;
+  border-left: 3px solid var(--accent); background: #12151c;
+}
+.hidden { display: none !important; }
+.opt-tag { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent2); }
+
+/* Leave-confirm + hub Create CTA (CRITICAL polish Fri 19) */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 60;
+  display: none; align-items: center; justify-content: center; padding: 16px;
+}
+.overlay.open { display: flex; }
+.overlay .sheet {
+  width: min(400px, 100%); background: var(--bg2); border: 1px solid var(--line);
+  border-radius: 16px; padding: 18px; box-shadow: var(--shadow);
+}
+.overlay .sheet h3 { margin: 0 0 8px; font-size: 16px; }
+.overlay .sheet .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
+.hub-strip {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 12px; margin-bottom: 12px;
+  background: linear-gradient(145deg, #1a1440, #0f2a28);
+  border: 1px solid var(--line); border-radius: 14px;
+}
+.hub-strip .btn.primary { flex: 0 0 auto; }
+.stepper {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.stepper .s {
+  white-space: nowrap;
+  min-width: max-content;
+}
+.step-meta {
+  font-size: 11px; color: var(--faint); margin: 0 0 8px;
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div style="flex:1">
+      <div class="opt-tag">Option B · Hub + task cards</div>
+      <div class="title" id="topTitle">Club hub</div>
+    </div>
+    <button class="btn primary" type="button" id="btnCreateHeader">Create event</button>
+    <button class="btn ghost" type="button" id="btnDraft" style="display:none">Save draft</button>
+    <a class="btn ghost" href="admin-approvals.html">Admin inbox →</a>
+  </div>
+  <div class="main" id="root"></div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="overlay" id="leaveOverlay" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <h3>Leave create cards?</h3>
+    <p class="muted">Save draft to resume from hub, or discard. (Fake · no backend.)</p>
+    <div class="actions">
+      <button class="btn ghost" type="button" id="leaveCancel">Stay</button>
+      <button class="btn danger" type="button" id="leaveDiscard">Discard</button>
+      <button class="btn primary" type="button" id="leaveSave">Save draft & leave</button>
+    </div>
+  </div>
+</div>
+<script>
+const toast = document.getElementById('toast');
+const leaveOverlay = document.getElementById('leaveOverlay');
+function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1700);}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));}
+
+let view = 'hub'; // hub | create
+let card = 0;
+let dirty = false;
+const state = {
+  title:'', summary:'', banner:false, category:'Workshop',
+  start:'2026-10-04T17:00', end:'2026-10-04T20:00', venue:'Quad Lawn', college:'CM-PUNE-01',
+  pocName:'', pocPhone:'', ticket:'free', price:'0', capacity:'150',
+  advTicket:false, minOrder:'1', maxOrder:'4', questions:false, q1:'Year of study?',
+  hide:false, ig:'', wa:'', notify:true
+};
+const cards = ['A Story','B Logistics','C Offer','D Launch'];
+
+function completeFlags(){
+  return [
+    !!(state.title && state.banner),
+    !!(state.start && state.venue && state.college && state.pocName),
+    !!(state.capacity && (state.ticket==='free' || state.price)),
+    true
+  ];
+}
+
+function renderHub(){
+  document.getElementById('topTitle').textContent = 'Club hub';
+  document.getElementById('btnDraft').style.display = 'none';
+  document.getElementById('btnCreateHeader').style.display = '';
+  document.getElementById('root').innerHTML = `
+    <div class="hero">
+      <div class="opt-tag">Demo Robotics · first-timer · first fold</div>
+      <h2 style="margin:6px 0 8px">What do you want to do?</h2>
+      <p class="muted">Create is hero CTA — not ~5.5 screens under stats. Analytics demoted.</p>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="heroCreate">Create event</button>
+        <span class="pill">Drafts 1</span>
+        <span class="pill pending">Pending 0</span>
+        <span class="pill approved">Live 2</span>
+      </div>
+    </div>
+    <h3 style="font-size:13px;color:var(--muted);margin:8px 0">Get started</h3>
+    <div class="task" id="taskCreate"><div class="dot"></div><div><strong>Create your first event</strong><div class="muted">Open the 4-card flow · keep all required fields</div></div></div>
+    <div class="task"><div class="dot"></div><div><strong>Add a team member</strong><div class="muted">Secondary · submembers IA is a parallel track</div></div></div>
+    <div class="task done"><div class="dot"></div><div><strong>Club profile basics</strong><div class="muted">Done in mock</div></div></div>
+    <div class="card"><div class="row" style="justify-content:space-between"><strong>Insights</strong><span class="faint">collapsed by default</span></div>
+      <p class="muted">Views / GMV charts live behind this — not above Create.</p>
+    </div>
+    <p class="note">CRITICAL: hero Create + header Create · Save draft + leave-confirm on cards · Capacity on Offer with advanced collapsed · 4 chips @390 (not 7–10 dots).</p>`;
+  document.getElementById('heroCreate').onclick = startCreate;
+  document.getElementById('taskCreate').onclick = startCreate;
+}
+
+function startCreate(){ view='create'; card=0; dirty=false; render(); }
+
+function renderCreate(){
+  document.getElementById('topTitle').textContent = 'Create · cards';
+  document.getElementById('btnDraft').style.display = '';
+  document.getElementById('btnCreateHeader').style.display = 'none';
+  const flags = completeFlags();
+  const rail = cards.map((c,idx)=>`<button class="chip ${idx===card?'on':''}" data-c="${idx}" type="button">${c} ${flags[idx]?'✓':'•'}</button>`).join('');
+  let body = '';
+  if(card===0) body = `
+    <div class="card stack">
+      <h2>A · Story</h2>
+      <label class="field">Title<input id="t" value="${esc(state.title)}" placeholder="HackNight Fall"/></label>
+      <label class="field">Summary<textarea id="s" rows="3">${esc(state.summary)}</textarea></label>
+      <label class="field">Category<select id="cat"><option>Workshop</option><option>Fest</option><option>Talk</option></select></label>
+      <div class="banner-fake ${state.banner?'has':''}" id="ban">${state.banner?'Banner ✓':'Attach banner'}</div>
+    </div>`;
+  if(card===1) body = `
+    <div class="card stack">
+      <h2>B · Logistics</h2>
+      <label class="field">Starts<input type="datetime-local" id="st" value="${state.start}"/></label>
+      <label class="field">Ends<input type="datetime-local" id="en" value="${state.end}"/></label>
+      <label class="field">Venue<input id="ve" value="${esc(state.venue)}"/></label>
+      <label class="field">College token<input id="co" value="${esc(state.college)}"/></label>
+      <button class="btn ghost" type="button" id="poc">Autofill POC</button>
+      <label class="field">POC name<input id="pn" value="${esc(state.pocName)}"/></label>
+      <label class="field">POC phone<input id="pp" value="${esc(state.pocPhone)}"/></label>
+    </div>`;
+  if(card===2) body = `
+    <div class="card stack">
+      <h2>C · Offer</h2>
+      <p class="muted">Capacity lean — not a stall wall. Advanced ticket rules + questions behind disclosure.</p>
+      <label class="field">Ticket<select id="tk"><option value="free" ${state.ticket==='free'?'selected':''}>Free</option><option value="paid" ${state.ticket==='paid'?'selected':''}>Paid</option></select></label>
+      <label class="field">Price<input id="pr" value="${esc(state.price)}"/></label>
+      <label class="field">Capacity<input id="cp" value="${esc(state.capacity)}"/></label>
+      <details class="adv" ${state.advTicket?'open':''}><summary>Advanced ticket rules (kept)</summary>
+        <label class="field">Min / max per order<input id="mm" value="${esc(state.minOrder+'–'+state.maxOrder)}"/></label>
+      </details>
+      <details class="adv"><summary>Custom attendee questions (kept)</summary>
+        <label class="field">Question<input id="q1" value="${esc(state.q1)}"/></label>
+      </details>
+    </div>`;
+  if(card===3) body = `
+    <div class="card stack">
+      <h2>D · Launch</h2>
+      <div class="card" style="background:#0e1118">
+        <strong>${esc(state.title||'(Untitled)')}</strong>
+        <p class="faint">${esc(state.start)} · ${esc(state.venue)} · cap ${esc(state.capacity)}</p>
+        <p class="faint">Banner ${state.banner?'yes':'no'} · POC ${esc(state.pocName||'—')}</p>
+      </div>
+      <label class="field"><span><input type="checkbox" id="hide" ${state.hide?'checked':''}/> Hide from All Events</span></label>
+      <label class="field">Instagram<input id="ig" value="${esc(state.ig)}"/></label>
+      <label class="field">Community WA<input id="wa" value="${esc(state.wa)}"/></label>
+      <label class="field"><span><input type="checkbox" id="ny" ${state.notify?'checked':''}/> Notify members on approval</span></label>
+    </div>`;
+  document.getElementById('root').innerHTML = `
+    <p class="step-meta">Card ${card+1} of 4 · chip rail usable @390 (replaces 7–10 stepper dots)</p>
+    <div class="row" style="margin-bottom:10px;overflow-x:auto;-webkit-overflow-scrolling:touch">${rail}</div>
+    ${body}
+    <div class="footer-bar">
+      <button class="btn ghost" type="button" id="back">${card===0?'← Hub':'Back'}</button>
+      <div style="flex:1"></div>
+      <button class="btn primary" type="button" id="next">${card===3?'Submit for approval':'Next card'}</button>
+    </div>`;
+  document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{ read(); card=+b.dataset.c; render(); });
+  document.getElementById('back').onclick=()=>{
+    read();
+    if(card===0){ askLeave(); return; }
+    card--; render();
+  };
+  document.getElementById('next').onclick=()=>{
+    read();
+    if(card<3){ card++; render(); return; }
+    if(!state.title || !state.banner){ showToast('Finish Story (title + banner)'); card=0; render(); return; }
+    if(!state.pocName){ showToast('Add POC on Logistics'); card=1; render(); return; }
+    dirty=false; showToast('Submitted · pending approval (fake)');
+  };
+  const ban = document.getElementById('ban');
+  if(ban) ban.onclick=()=>{ state.banner=!state.banner; dirty=true; render(); };
+  const poc = document.getElementById('poc');
+  if(poc) poc.onclick=()=>{ state.pocName='Asha Verma'; state.pocPhone='9876543210'; dirty=true; showToast('POC autofilled'); render(); };
+}
+
+function read(){
+  const g=id=>document.getElementById(id);
+  if(card===0 && g('t')){ state.title=g('t').value; state.summary=g('s').value; state.category=g('cat').value; dirty=true; }
+  if(card===1 && g('st')){ state.start=g('st').value; state.end=g('en').value; state.venue=g('ve').value; state.college=g('co').value; state.pocName=g('pn').value; state.pocPhone=g('pp').value; dirty=true; }
+  if(card===2 && g('tk')){ state.ticket=g('tk').value; state.price=g('pr').value; state.capacity=g('cp').value; if(g('q1')) state.q1=g('q1').value; dirty=true; }
+  if(card===3 && g('hide')){ state.hide=g('hide').checked; state.ig=g('ig').value; state.wa=g('wa').value; state.notify=g('ny').checked; dirty=true; }
+}
+
+function askLeave(){
+  read();
+  if(!dirty && !state.title){ view='hub'; render(); return; }
+  leaveOverlay.classList.add('open');
+}
+function closeLeave(){ leaveOverlay.classList.remove('open'); }
+document.getElementById('leaveCancel').onclick = closeLeave;
+document.getElementById('leaveDiscard').onclick = ()=>{
+  closeLeave(); dirty=false; state.title=''; state.banner=false; state.pocName='';
+  view='hub'; showToast('Discarded (fake)'); render();
+};
+document.getElementById('leaveSave').onclick = ()=>{
+  closeLeave(); dirty=false; view='hub'; showToast('Draft saved & left (fake)'); render();
+};
+
+function render(){ view==='hub'?renderHub():renderCreate(); }
+document.getElementById('btnDraft').onclick=()=>{ read(); dirty=false; showToast('Draft saved (fake)'); };
+document.getElementById('btnCreateHeader').onclick=startCreate;
+render();
+</script>
+</body>
+</html>

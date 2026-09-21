@@ -1,1 +1,324 @@
-<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>Option A — Admin Approvals</title><style>body{font:15px system-ui;background:#0b0d12;color:#e8ecf4;margin:auto;padding:16px;max-width:520px}.card{background:#161a24;border:1px solid #2a3142;border-radius:14px;padding:16px;margin:10px 0}button{padding:10px;border:0;border-radius:10px;background:#7c6cff;color:white}small{color:#9aa3b5}</style><h1>Approvals</h1><p><small>Option A · priority list</small></p><div id="app"></div><script>const e=[['HackNight Fall','Demo Robotics','pending'],['Open Mic Soft Launch','LitSoc','pending'],['Freshers Orientation','Student Council','pending']];function r(){app.innerHTML=e.map((x,i)=>`<section class=card><b>${x[0]}</b><br><small>${x[1]} · ${x[2]}</small><p><button onclick="e[${i}][2]='approved';r()">Approve</button> <button onclick="e[${i}][2]='rejected';r()">Reject</button></p></section>`).join('')}r()</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Option A — Admin Approvals (Priority List)</title>
+<style>
+/* CampusMeet Admin+Club IA mockups — Whisperflow-dark, frontend-only */
+:root {
+  --bg: #0b0d12;
+  --bg2: #12151c;
+  --bg3: #1a1f2b;
+  --card: #161a24;
+  --line: #2a3142;
+  --text: #e8ecf4;
+  --muted: #9aa3b5;
+  --faint: #6b7385;
+  --accent: #7c6cff;
+  --accent2: #5eead4;
+  --warn: #fbbf24;
+  --danger: #f87171;
+  --ok: #34d399;
+  --radius: 14px;
+  --shadow: 0 12px 40px rgba(0,0,0,.45);
+  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--font); }
+a { color: var(--accent2); text-decoration: none; }
+button, input, select, textarea { font: inherit; }
+.app {
+  max-width: 1100px; margin: 0 auto; min-height: 100vh;
+  display: grid; grid-template-columns: 1fr;
+}
+@media (min-width: 900px) {
+  .app.with-rail { grid-template-columns: 220px 1fr; }
+}
+.rail {
+  background: var(--bg2); border-right: 1px solid var(--line);
+  padding: 18px 14px; display: none;
+}
+@media (min-width: 900px) { .rail { display: block; } }
+.rail .brand { font-weight: 700; letter-spacing: .02em; margin-bottom: 18px; }
+.rail .brand span { color: var(--accent2); }
+.rail nav a, .rail nav button.navitem {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; text-align: left; background: transparent; border: 0;
+  color: var(--muted); padding: 10px 12px; border-radius: 10px; cursor: pointer; margin-bottom: 4px;
+}
+.rail nav a.active, .rail nav button.navitem.active, .rail nav a:hover, .rail nav button.navitem:hover {
+  background: var(--bg3); color: var(--text);
+}
+.badge {
+  background: var(--accent); color: white; font-size: 11px; font-weight: 700;
+  border-radius: 999px; padding: 2px 7px; min-width: 20px; text-align: center;
+}
+.top {
+  position: sticky; top: 0; z-index: 20; backdrop-filter: blur(10px);
+  background: rgba(11,13,18,.85); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+}
+.top .title { font-weight: 650; flex: 1; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg3); border: 1px solid var(--line); color: var(--muted);
+  border-radius: 999px; padding: 6px 12px; font-size: 12px; cursor: pointer;
+}
+.chip.on { color: var(--text); border-color: var(--accent); background: #1d1a33; }
+.main { padding: 16px; max-width: 780px; margin: 0 auto; width: 100%; }
+.main.wide { max-width: 1100px; }
+.phone {
+  max-width: 390px; margin: 0 auto; border: 1px solid var(--line);
+  border-radius: 24px; overflow: hidden; background: var(--bg);
+  box-shadow: var(--shadow);
+}
+.desk-wrap { display: grid; gap: 20px; }
+@media (min-width: 900px) {
+  .desk-wrap { grid-template-columns: 390px 1fr; align-items: start; }
+}
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px; margin-bottom: 12px;
+}
+.card h2, .card h3 { margin: 0 0 8px; font-size: 16px; }
+.muted { color: var(--muted); font-size: 13px; line-height: 1.45; }
+.faint { color: var(--faint); font-size: 12px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+label.field { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--muted); }
+label.field input, label.field select, label.field textarea {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+  color: var(--text); padding: 11px 12px; outline: none;
+}
+label.field input:focus, label.field select:focus, label.field textarea:focus {
+  border-color: var(--accent);
+}
+.btn {
+  appearance: none; border: 0; border-radius: 12px; padding: 11px 16px;
+  font-weight: 650; cursor: pointer; background: var(--bg3); color: var(--text);
+}
+.btn.primary { background: linear-gradient(135deg, var(--accent), #5b8cff); color: white; }
+.btn.ghost { background: transparent; border: 1px solid var(--line); }
+.btn.ok { background: #0f3d2e; color: var(--ok); border: 1px solid #1f6b4f; }
+.btn.danger { background: #3a1515; color: var(--danger); border: 1px solid #6b2a2a; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.stepper { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 8px; }
+.stepper .s {
+  flex: 0 0 auto; font-size: 11px; padding: 6px 10px; border-radius: 999px;
+  background: var(--bg3); color: var(--faint); border: 1px solid transparent;
+}
+.stepper .s.on { color: var(--text); border-color: var(--accent); background: #1d1a33; }
+.stepper .s.done { color: var(--accent2); }
+.footer-bar {
+  position: sticky; bottom: 0; display: flex; gap: 8px; padding: 12px 0 4px;
+  background: linear-gradient(transparent, var(--bg) 30%);
+}
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+  background: #10231f; border: 1px solid #1f6b4f; color: var(--ok);
+  padding: 12px 16px; border-radius: 12px; opacity: 0; pointer-events: none;
+  transition: .25s ease; z-index: 50; font-size: 13px; box-shadow: var(--shadow);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.adv {
+  border: 1px dashed var(--line); border-radius: 12px; padding: 10px 12px; margin-top: 8px;
+}
+.adv summary { cursor: pointer; color: var(--accent2); font-size: 13px; font-weight: 600; }
+.pill { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: var(--bg3); color: var(--muted); }
+.pill.pending { background: #3a2e10; color: var(--warn); }
+.pill.approved { background: #0f3d2e; color: var(--ok); }
+.pill.rejected { background: #3a1515; color: var(--danger); }
+.pill.needs { background: #1a2740; color: #93c5fd; }
+.list-item {
+  display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 12px;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--bg2);
+  cursor: pointer; margin-bottom: 8px;
+}
+.list-item:hover { border-color: var(--accent); }
+.drawer {
+  position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; z-index: 40;
+  align-items: flex-end; justify-content: center;
+}
+.drawer.open { display: flex; }
+.drawer .panel {
+  width: min(520px, 100%); max-height: 85vh; overflow: auto;
+  background: var(--bg2); border-radius: 18px 18px 0 0; padding: 18px;
+  border: 1px solid var(--line); box-shadow: var(--shadow);
+}
+@media (min-width: 900px) {
+  .drawer { align-items: center; }
+  .drawer .panel { border-radius: 18px; }
+}
+.kanban {
+  display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory;
+}
+.kanban .col {
+  flex: 0 0 260px; scroll-snap-align: start; background: var(--bg2);
+  border: 1px solid var(--line); border-radius: 14px; padding: 10px; min-height: 360px;
+}
+.kanban .col h3 { margin: 0 0 10px; font-size: 13px; color: var(--muted); display:flex; justify-content:space-between; }
+.kcard {
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px; margin-bottom: 8px; cursor: grab;
+}
+.hero {
+  background: linear-gradient(145deg, #1a1440, #0f2a28);
+  border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin-bottom: 12px;
+}
+.task {
+  display: flex; gap: 12px; align-items: flex-start; padding: 14px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--card); margin-bottom: 8px; cursor: pointer;
+}
+.task .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--warn); margin-top: 5px; }
+.task.done .dot { background: var(--ok); }
+.mode {
+  border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: var(--card);
+  cursor: pointer; margin-bottom: 10px;
+}
+.mode:hover, .mode.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.banner-fake {
+  height: 120px; border-radius: 12px; border: 1px dashed var(--line);
+  display: flex; align-items: center; justify-content: center; color: var(--muted);
+  background: repeating-linear-gradient(45deg, #141821, #141821 10px, #181d28 10px, #181d28 20px);
+}
+.banner-fake.has { background: linear-gradient(120deg, #4338ca, #0f766e); color: white; border-style: solid; font-weight: 700; }
+.note {
+  font-size: 11px; color: var(--faint); margin: 8px 0 0; padding: 8px 10px;
+  border-left: 3px solid var(--accent); background: #12151c;
+}
+.hidden { display: none !important; }
+.opt-tag { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent2); }
+
+/* Leave-confirm + hub Create CTA (CRITICAL polish Fri 19) */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 60;
+  display: none; align-items: center; justify-content: center; padding: 16px;
+}
+.overlay.open { display: flex; }
+.overlay .sheet {
+  width: min(400px, 100%); background: var(--bg2); border: 1px solid var(--line);
+  border-radius: 16px; padding: 18px; box-shadow: var(--shadow);
+}
+.overlay .sheet h3 { margin: 0 0 8px; font-size: 16px; }
+.overlay .sheet .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
+.hub-strip {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 12px; margin-bottom: 12px;
+  background: linear-gradient(145deg, #1a1440, #0f2a28);
+  border: 1px solid var(--line); border-radius: 14px;
+}
+.hub-strip .btn.primary { flex: 0 0 auto; }
+.stepper {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.stepper .s {
+  white-space: nowrap;
+  min-width: max-content;
+}
+.step-meta {
+  font-size: 11px; color: var(--faint); margin: 0 0 8px;
+}
+
+</style>
+</head>
+<body>
+<div class="app with-rail">
+  <aside class="rail">
+    <div class="brand">Campus<span>Meet</span> Admin</div>
+    <nav>
+      <a href="#">Home</a>
+      <a class="active" href="admin-approvals.html">Approvals <span class="badge" id="badge">3</span></a>
+      <a href="#">Events</a>
+      <a href="#">Clubs</a>
+      <a href="#">Campaigns</a>
+      <a href="#">Settings</a>
+    </nav>
+    <p class="faint" style="margin-top:18px">Option A · list + badge · not Inbox/Kanban</p>
+    <a class="btn ghost" style="margin-top:10px;display:inline-block" href="create-event.html">← Club create</a>
+  </aside>
+  <div>
+    <div class="top">
+      <div>
+        <div class="opt-tag">Option A · Priority list</div>
+        <div class="title">Approvals</div>
+      </div>
+      <span class="pill pending" id="mobileBadge">3 pending</span>
+    </div>
+    <div class="main wide">
+      <div class="row" id="filters">
+        <button class="chip on" data-f="pending">Pending</button>
+        <button class="chip" data-f="approved">Approved</button>
+        <button class="chip" data-f="rejected">Rejected</button>
+        <button class="chip" data-f="all">All</button>
+      </div>
+      <p class="muted">Shopify-style priority nav: Approvals near top. Fake queue only.</p>
+      <div id="list"></div>
+    </div>
+  </div>
+</div>
+<div class="drawer" id="drawer">
+  <div class="panel" id="panel"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const events = [
+  {id:1, title:'HackNight Fall', club:'Demo Robotics', college:'Pune Tech', when:'4 Oct · 5–8pm', type:'paid', price:199, status:'pending', submitted:'2h ago', banner:true},
+  {id:2, title:'Open Mic Soft Launch', club:'LitSoc', college:'State U', when:'12 Oct · 6pm', type:'free', price:0, status:'pending', submitted:'5h ago', banner:true},
+  {id:3, title:'Freshers Orientation', club:'Student Council', college:'City College', when:'20 Sep · 10am', type:'free', price:0, status:'pending', submitted:'1d ago', banner:false},
+  {id:4, title:'AI Talk Series', club:'ACM Chapter', college:'Pune Tech', when:'1 Oct · 4pm', type:'paid', price:99, status:'approved', submitted:'3d ago', banner:true},
+  {id:5, title:'Untitled Drafty', club:'Chaos Club', college:'—', when:'TBD', type:'paid', price:500, status:'rejected', submitted:'4d ago', banner:false, reason:'Missing venue + banner'}
+];
+let filter = 'pending';
+let openId = null;
+const toast = document.getElementById('toast');
+function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1600);}
+function pendingCount(){return events.filter(e=>e.status==='pending').length;}
+function refreshBadge(){const n=pendingCount(); document.getElementById('badge').textContent=n; document.getElementById('mobileBadge').textContent=n+' pending';}
+
+function renderList(){
+  const list = document.getElementById('list');
+  const rows = events.filter(e=> filter==='all' || e.status===filter);
+  if(!rows.length){ list.innerHTML = '<div class="card muted">Nothing in this filter.</div>'; return; }
+  list.innerHTML = rows.map(e=>`
+    <div class="list-item" data-id="${e.id}">
+      <div>
+        <div class="row"><strong>${e.title}</strong> <span class="pill ${e.status}">${e.status}</span> <span class="pill">${e.type}</span></div>
+        <div class="muted">${e.club} · ${e.college}</div>
+        <div class="faint">${e.when} · submitted ${e.submitted}</div>
+      </div>
+      <div class="faint">Open →</div>
+    </div>`).join('');
+  list.querySelectorAll('.list-item').forEach(el=>el.onclick=()=>openDetail(+el.dataset.id));
+}
+
+function openDetail(id){
+  openId = id;
+  const e = events.find(x=>x.id===id);
+  const drawer = document.getElementById('drawer');
+  document.getElementById('panel').innerHTML = `
+    <div class="row"><strong>${e.title}</strong> <span class="pill ${e.status}">${e.status}</span></div>
+    <p class="muted">${e.club} · ${e.college} · ${e.when}</p>
+    <div class="banner-fake ${e.banner?'has':''}" style="margin:10px 0">${e.banner?'Banner':'No banner'}</div>
+    <p class="faint">₹${e.price} · ${e.type}${e.reason? ' · '+e.reason:''}</p>
+    <div class="row" style="margin-top:14px">
+      <button class="btn ok" id="approve">Approve</button>
+      <button class="btn danger" id="reject">Reject</button>
+      <button class="btn ghost" id="close">Close</button>
+    </div>
+    <p class="note">Fake actions only — no Azure / no DB.</p>`;
+  drawer.classList.add('open');
+  document.getElementById('close').onclick=()=>drawer.classList.remove('open');
+  document.getElementById('approve').onclick=()=>{ e.status='approved'; refreshBadge(); renderList(); drawer.classList.remove('open'); showToast('Approved (fake)'); };
+  document.getElementById('reject').onclick=()=>{ e.status='rejected'; e.reason=e.reason||'Rejected in mock'; refreshBadge(); renderList(); drawer.classList.remove('open'); showToast('Rejected (fake)'); };
+}
+document.getElementById('drawer').addEventListener('click',ev=>{ if(ev.target.id==='drawer') ev.target.classList.remove('open'); });
+document.querySelectorAll('#filters .chip').forEach(c=>c.onclick=()=>{
+  document.querySelectorAll('#filters .chip').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on'); filter=c.dataset.f; renderList();
+});
+refreshBadge(); renderList();
+</script>
+</body>
+</html>

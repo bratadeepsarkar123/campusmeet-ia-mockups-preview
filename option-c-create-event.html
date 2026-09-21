@@ -1,1 +1,486 @@
-<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>Option C — Create Event</title><style>body{font:15px system-ui;background:#0b0d12;color:#e8ecf4;margin:auto;padding:16px;max-width:520px}.mode,.card{background:#161a24;border:1px solid #2a3142;border-radius:14px;padding:16px;margin:10px 0}button{padding:11px;border:0;border-radius:10px;background:#7c6cff;color:white}</style><h1>Create event</h1><p>Option C · quick vs full</p><div class=mode><h2>Quick create</h2><p>Minimum fields now; finish setup after approval.</p><button onclick="go('Quick create')">Choose quick</button></div><div class=mode><h2>Full create</h2><p>All sections before submit.</p><button onclick="go('Full create')">Choose full</button></div><div id=out></div><script>function go(x){out.innerHTML=`<div class=card><h2>${x}</h2><input placeholder="Event title" style="padding:12px"><p><button onclick="this.textContent='Submitted (fake)'">Continue</button></p></div>`}</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Option C — Quick vs Full Create</title>
+<style>
+/* CampusMeet Admin+Club IA mockups — Whisperflow-dark, frontend-only */
+:root {
+  --bg: #0b0d12;
+  --bg2: #12151c;
+  --bg3: #1a1f2b;
+  --card: #161a24;
+  --line: #2a3142;
+  --text: #e8ecf4;
+  --muted: #9aa3b5;
+  --faint: #6b7385;
+  --accent: #7c6cff;
+  --accent2: #5eead4;
+  --warn: #fbbf24;
+  --danger: #f87171;
+  --ok: #34d399;
+  --radius: 14px;
+  --shadow: 0 12px 40px rgba(0,0,0,.45);
+  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--font); }
+a { color: var(--accent2); text-decoration: none; }
+button, input, select, textarea { font: inherit; }
+.app {
+  max-width: 1100px; margin: 0 auto; min-height: 100vh;
+  display: grid; grid-template-columns: 1fr;
+}
+@media (min-width: 900px) {
+  .app.with-rail { grid-template-columns: 220px 1fr; }
+}
+.rail {
+  background: var(--bg2); border-right: 1px solid var(--line);
+  padding: 18px 14px; display: none;
+}
+@media (min-width: 900px) { .rail { display: block; } }
+.rail .brand { font-weight: 700; letter-spacing: .02em; margin-bottom: 18px; }
+.rail .brand span { color: var(--accent2); }
+.rail nav a, .rail nav button.navitem {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; text-align: left; background: transparent; border: 0;
+  color: var(--muted); padding: 10px 12px; border-radius: 10px; cursor: pointer; margin-bottom: 4px;
+}
+.rail nav a.active, .rail nav button.navitem.active, .rail nav a:hover, .rail nav button.navitem:hover {
+  background: var(--bg3); color: var(--text);
+}
+.badge {
+  background: var(--accent); color: white; font-size: 11px; font-weight: 700;
+  border-radius: 999px; padding: 2px 7px; min-width: 20px; text-align: center;
+}
+.top {
+  position: sticky; top: 0; z-index: 20; backdrop-filter: blur(10px);
+  background: rgba(11,13,18,.85); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+}
+.top .title { font-weight: 650; flex: 1; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg3); border: 1px solid var(--line); color: var(--muted);
+  border-radius: 999px; padding: 6px 12px; font-size: 12px; cursor: pointer;
+}
+.chip.on { color: var(--text); border-color: var(--accent); background: #1d1a33; }
+.main { padding: 16px; max-width: 780px; margin: 0 auto; width: 100%; }
+.main.wide { max-width: 1100px; }
+.phone {
+  max-width: 390px; margin: 0 auto; border: 1px solid var(--line);
+  border-radius: 24px; overflow: hidden; background: var(--bg);
+  box-shadow: var(--shadow);
+}
+.desk-wrap { display: grid; gap: 20px; }
+@media (min-width: 900px) {
+  .desk-wrap { grid-template-columns: 390px 1fr; align-items: start; }
+}
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px; margin-bottom: 12px;
+}
+.card h2, .card h3 { margin: 0 0 8px; font-size: 16px; }
+.muted { color: var(--muted); font-size: 13px; line-height: 1.45; }
+.faint { color: var(--faint); font-size: 12px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+label.field { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--muted); }
+label.field input, label.field select, label.field textarea {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+  color: var(--text); padding: 11px 12px; outline: none;
+}
+label.field input:focus, label.field select:focus, label.field textarea:focus {
+  border-color: var(--accent);
+}
+.btn {
+  appearance: none; border: 0; border-radius: 12px; padding: 11px 16px;
+  font-weight: 650; cursor: pointer; background: var(--bg3); color: var(--text);
+}
+.btn.primary { background: linear-gradient(135deg, var(--accent), #5b8cff); color: white; }
+.btn.ghost { background: transparent; border: 1px solid var(--line); }
+.btn.ok { background: #0f3d2e; color: var(--ok); border: 1px solid #1f6b4f; }
+.btn.danger { background: #3a1515; color: var(--danger); border: 1px solid #6b2a2a; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.stepper { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 8px; }
+.stepper .s {
+  flex: 0 0 auto; font-size: 11px; padding: 6px 10px; border-radius: 999px;
+  background: var(--bg3); color: var(--faint); border: 1px solid transparent;
+}
+.stepper .s.on { color: var(--text); border-color: var(--accent); background: #1d1a33; }
+.stepper .s.done { color: var(--accent2); }
+.footer-bar {
+  position: sticky; bottom: 0; display: flex; gap: 8px; padding: 12px 0 4px;
+  background: linear-gradient(transparent, var(--bg) 30%);
+}
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+  background: #10231f; border: 1px solid #1f6b4f; color: var(--ok);
+  padding: 12px 16px; border-radius: 12px; opacity: 0; pointer-events: none;
+  transition: .25s ease; z-index: 50; font-size: 13px; box-shadow: var(--shadow);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.adv {
+  border: 1px dashed var(--line); border-radius: 12px; padding: 10px 12px; margin-top: 8px;
+}
+.adv summary { cursor: pointer; color: var(--accent2); font-size: 13px; font-weight: 600; }
+.pill { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: var(--bg3); color: var(--muted); }
+.pill.pending { background: #3a2e10; color: var(--warn); }
+.pill.approved { background: #0f3d2e; color: var(--ok); }
+.pill.rejected { background: #3a1515; color: var(--danger); }
+.pill.needs { background: #1a2740; color: #93c5fd; }
+.list-item {
+  display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 12px;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--bg2);
+  cursor: pointer; margin-bottom: 8px;
+}
+.list-item:hover { border-color: var(--accent); }
+.drawer {
+  position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; z-index: 40;
+  align-items: flex-end; justify-content: center;
+}
+.drawer.open { display: flex; }
+.drawer .panel {
+  width: min(520px, 100%); max-height: 85vh; overflow: auto;
+  background: var(--bg2); border-radius: 18px 18px 0 0; padding: 18px;
+  border: 1px solid var(--line); box-shadow: var(--shadow);
+}
+@media (min-width: 900px) {
+  .drawer { align-items: center; }
+  .drawer .panel { border-radius: 18px; }
+}
+.kanban {
+  display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory;
+}
+.kanban .col {
+  flex: 0 0 260px; scroll-snap-align: start; background: var(--bg2);
+  border: 1px solid var(--line); border-radius: 14px; padding: 10px; min-height: 360px;
+}
+.kanban .col h3 { margin: 0 0 10px; font-size: 13px; color: var(--muted); display:flex; justify-content:space-between; }
+.kcard {
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px; margin-bottom: 8px; cursor: grab;
+}
+.hero {
+  background: linear-gradient(145deg, #1a1440, #0f2a28);
+  border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin-bottom: 12px;
+}
+.task {
+  display: flex; gap: 12px; align-items: flex-start; padding: 14px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--card); margin-bottom: 8px; cursor: pointer;
+}
+.task .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--warn); margin-top: 5px; }
+.task.done .dot { background: var(--ok); }
+.mode {
+  border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: var(--card);
+  cursor: pointer; margin-bottom: 10px;
+}
+.mode:hover, .mode.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.banner-fake {
+  height: 120px; border-radius: 12px; border: 1px dashed var(--line);
+  display: flex; align-items: center; justify-content: center; color: var(--muted);
+  background: repeating-linear-gradient(45deg, #141821, #141821 10px, #181d28 10px, #181d28 20px);
+}
+.banner-fake.has { background: linear-gradient(120deg, #4338ca, #0f766e); color: white; border-style: solid; font-weight: 700; }
+.note {
+  font-size: 11px; color: var(--faint); margin: 8px 0 0; padding: 8px 10px;
+  border-left: 3px solid var(--accent); background: #12151c;
+}
+.hidden { display: none !important; }
+.opt-tag { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent2); }
+
+/* Leave-confirm + hub Create CTA (CRITICAL polish Fri 19) */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 60;
+  display: none; align-items: center; justify-content: center; padding: 16px;
+}
+.overlay.open { display: flex; }
+.overlay .sheet {
+  width: min(400px, 100%); background: var(--bg2); border: 1px solid var(--line);
+  border-radius: 16px; padding: 18px; box-shadow: var(--shadow);
+}
+.overlay .sheet h3 { margin: 0 0 8px; font-size: 16px; }
+.overlay .sheet .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
+.hub-strip {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 12px; margin-bottom: 12px;
+  background: linear-gradient(145deg, #1a1440, #0f2a28);
+  border: 1px solid var(--line); border-radius: 14px;
+}
+.hub-strip .btn.primary { flex: 0 0 auto; }
+.stepper {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.stepper .s {
+  white-space: nowrap;
+  min-width: max-content;
+}
+.step-meta {
+  font-size: 11px; color: var(--faint); margin: 0 0 8px;
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div style="flex:1">
+      <div class="opt-tag">Option C · Split modes</div>
+      <div class="title" id="topTitle">Club home</div>
+    </div>
+    <button class="btn primary" type="button" id="btnCreateHeader">Create event</button>
+    <button class="btn ghost" type="button" id="btnDraft" style="display:none">Save draft</button>
+    <a class="btn ghost" href="admin-approvals.html">Admin board →</a>
+  </div>
+  <div class="main" id="root"></div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="overlay" id="leaveOverlay" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <h3>Leave create?</h3>
+    <p class="muted">Save draft to resume, or discard. (Fake · no backend.)</p>
+    <div class="actions">
+      <button class="btn ghost" type="button" id="leaveCancel">Stay</button>
+      <button class="btn danger" type="button" id="leaveDiscard">Discard</button>
+      <button class="btn primary" type="button" id="leaveSave">Save draft & leave</button>
+    </div>
+  </div>
+</div>
+<script>
+const toast=document.getElementById('toast');
+const leaveOverlay=document.getElementById('leaveOverlay');
+function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1700);}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));}
+
+let screen='hub'; // hub | picker | flow
+let mode=null; // quick | full | null
+let step=0;
+let dirty=false;
+const state={
+  title:'', start:'2026-10-04T17:00', end:'2026-10-04T20:00', venue:'Lab 3', banner:false,
+  college:'CM-PUNE-01', poc:'Asha Verma', ticket:'paid', price:'199', capacity:'200',
+  summary:'', questions:'', ig:'', wa:'', hide:false, notify:true, minMax:'1–4',
+  submitted:false, finish:{summary:false, questions:false, links:false}
+};
+
+function render(){
+  const showCreate = screen==='hub';
+  const inFlow = screen==='flow' && !state.submitted;
+  document.getElementById('btnCreateHeader').style.display = showCreate ? '' : 'none';
+  document.getElementById('btnDraft').style.display = inFlow ? '' : 'none';
+  if(screen==='hub') return renderHub();
+  if(screen==='picker') return renderPicker();
+  if(state.submitted) return renderFinish();
+  if(mode==='quick') return renderQuick();
+  return renderFull();
+}
+
+function renderHub(){
+  document.getElementById('topTitle').textContent='Club home';
+  document.getElementById('root').innerHTML=`
+    <div class="hub-strip">
+      <div style="flex:1">
+        <div class="opt-tag">First fold · not buried</div>
+        <strong>Create event — then pick Quick or Full</strong>
+        <p class="faint" style="margin:4px 0 0">Header Create too. Stats below.</p>
+      </div>
+      <button class="btn primary" type="button" id="heroCreate">Create event</button>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><strong>Dashboard stats</strong><span class="faint">demoted</span></div>
+      <p class="muted">Welcome + metrics no longer bury Create (~5.5 screens live).</p>
+    </div>
+    <p class="note">CRITICAL: hub Create CTA · Save draft + leave-confirm · Quick capacity lean (no stall) · labeled 3/4-step rail @390.</p>`;
+  document.getElementById('heroCreate').onclick=()=>{screen='picker'; render();};
+}
+
+function renderPicker(){
+  document.getElementById('topTitle').textContent='Create · choose mode';
+  document.getElementById('root').innerHTML=`
+    <p class="muted">Same eventual field volume. Different timing. Quick avoids Capacity stall; Full keeps everything before submit.</p>
+    <div class="mode" id="mQuick">
+      <strong>Quick create</strong>
+      <p class="muted">Minimum to submit for approval. Finish setup checklist while Pending.</p>
+      <span class="pill">~3 short labeled steps</span>
+    </div>
+    <div class="mode" id="mFull">
+      <strong>Full create</strong>
+      <p class="muted">All sections before submit — Story, Logistics, Offer+Extras, Review.</p>
+      <span class="pill">Power organizers</span>
+    </div>
+    <button class="btn ghost" type="button" id="backHub">← Hub</button>`;
+  document.getElementById('mQuick').onclick=()=>{mode='quick'; step=0; screen='flow'; dirty=false; render();};
+  document.getElementById('mFull').onclick=()=>{mode='full'; step=0; screen='flow'; dirty=false; render();};
+  document.getElementById('backHub').onclick=()=>{screen='hub'; mode=null; render();};
+}
+
+function renderQuick(){
+  document.getElementById('topTitle').textContent='Quick create';
+  const steps=['1 Basics','2 Tickets','3 Submit'];
+  const rail=steps.map((s,idx)=>`<div class="s ${idx===step?'on':''} ${idx<step?'done':''}">${s}</div>`).join('');
+  let body='';
+  if(step===0) body=`
+    <div class="card stack">
+      <h2>Basics (required now)</h2>
+      <label class="field">Title<input id="t" value="${esc(state.title)}"/></label>
+      <label class="field">Starts<input type="datetime-local" id="st" value="${state.start}"/></label>
+      <label class="field">Ends<input type="datetime-local" id="en" value="${state.end}"/></label>
+      <label class="field">Venue<input id="ve" value="${esc(state.venue)}"/></label>
+      <div class="banner-fake ${state.banner?'has':''}" id="ban">${state.banner?'Banner ✓':'Banner required'}</div>
+      <label class="field">College token<input id="co" value="${esc(state.college)}"/></label>
+      <label class="field">POC<input id="poc" value="${esc(state.poc)}"/></label>
+    </div>`;
+  if(step===1) body=`
+    <div class="card stack">
+      <h2>Tickets</h2>
+      <p class="muted">Capacity only — no kitchen-sink stall. Advanced deferred to Finish setup (kept, not deleted).</p>
+      <label class="field">Type<select id="tk"><option value="free" ${state.ticket==='free'?'selected':''}>Free</option><option value="paid" ${state.ticket==='paid'?'selected':''}>Paid</option></select></label>
+      <label class="field">Price<input id="pr" value="${esc(state.price)}"/></label>
+      <label class="field">Capacity<input id="cp" value="${esc(state.capacity)}"/></label>
+      <p class="faint">Custom questions, community links, min/max, waitlist → Finish setup after submit.</p>
+    </div>`;
+  if(step===2) body=`
+    <div class="card stack">
+      <h2>Submit</h2>
+      <p class="muted">Deferred after submit: long summary, custom questions, community links, advanced ticket rules.</p>
+      <label class="field"><span><input type="checkbox" id="hide" ${state.hide?'checked':''}/> Hide from All Events</span></label>
+      <div class="card" style="background:#0e1118"><strong>${esc(state.title||'(Untitled)')}</strong><p class="faint">${esc(state.start)} · ${esc(state.venue)} · banner ${state.banner?'yes':'no'}</p></div>
+    </div>`;
+  document.getElementById('root').innerHTML=`
+    <p class="step-meta">Quick · step ${step+1} of 3 · labeled rail scrolls @390</p>
+    <div class="stepper">${rail}</div>
+    ${body}
+    <div class="footer-bar">
+      <button class="btn ghost" type="button" id="back">${step===0?'Modes':'Back'}</button>
+      <div style="flex:1"></div>
+      <button class="btn primary" type="button" id="next">${step===2?'Submit for approval':'Next'}</button>
+    </div>`;
+  bindQuick();
+}
+
+function bindQuick(){
+  const ban=document.getElementById('ban');
+  if(ban) ban.onclick=()=>{readQuick(); state.banner=!state.banner; dirty=true; render();};
+  document.getElementById('back').onclick=()=>{
+    readQuick();
+    if(step===0){ askLeaveToPicker(); return; }
+    step--; render();
+  };
+  document.getElementById('next').onclick=()=>{
+    readQuick();
+    if(step<2){ step++; render(); const on=document.querySelector('.stepper .s.on'); if(on) on.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'}); return; }
+    if(!state.title||!state.banner){ showToast('Title + banner required'); step=0; render(); return; }
+    state.submitted=true; dirty=false; showToast('Pending approval (fake)'); render();
+  };
+}
+function readQuick(){
+  const g=id=>document.getElementById(id);
+  if(g('t')){state.title=g('t').value; state.start=g('st').value; state.end=g('en').value; state.venue=g('ve').value; state.college=g('co').value; state.poc=g('poc').value; dirty=true;}
+  if(g('tk')){state.ticket=g('tk').value; state.price=g('pr').value; state.capacity=g('cp').value; dirty=true;}
+  if(g('hide')) {state.hide=g('hide').checked; dirty=true;}
+}
+
+function renderFinish(){
+  document.getElementById('topTitle').textContent='Finish setup';
+  document.getElementById('btnDraft').style.display='none';
+  const f=state.finish;
+  document.getElementById('root').innerHTML=`
+    <div class="card">
+      <span class="pill pending">Pending approval</span>
+      <h2 style="margin-top:8px">${esc(state.title)}</h2>
+      <p class="muted">Resume path instead of Discard trap. Complete residual fields before listed/live.</p>
+    </div>
+    <div class="task ${f.summary?'done':''}" id="fs"><div class="dot"></div><div><strong>Add long summary</strong><div class="muted">Required volume — deferred, not stripped</div></div></div>
+    <div class="task ${f.questions?'done':''}" id="fq"><div class="dot"></div><div><strong>Custom attendee questions</strong></div></div>
+    <div class="task ${f.links?'done':''}" id="fl"><div class="dot"></div><div><strong>Community links + advanced ticket rules</strong></div></div>
+    <button class="btn ghost" type="button" id="again">← Hub / create another</button>`;
+  document.getElementById('fs').onclick=()=>{state.finish.summary=true; state.summary='Filled in mock'; showToast('Summary saved (fake)'); render();};
+  document.getElementById('fq').onclick=()=>{state.finish.questions=true; showToast('Questions saved (fake)'); render();};
+  document.getElementById('fl').onclick=()=>{state.finish.links=true; showToast('Links + advanced saved (fake)'); render();};
+  document.getElementById('again').onclick=()=>{screen='hub'; mode=null; state.submitted=false; step=0; render();};
+}
+
+function renderFull(){
+  document.getElementById('topTitle').textContent='Full create';
+  const labels=['1 Story','2 Logistics','3 Offer+','4 Review'];
+  const rail=labels.map((s,idx)=>`<div class="s ${idx===step?'on':''} ${idx<step?'done':''}">${s}</div>`).join('');
+  let body='';
+  if(step===0) body=`<div class="card stack"><h2>Story</h2>
+    <label class="field">Title<input id="t" value="${esc(state.title)}"/></label>
+    <label class="field">Summary<textarea id="su" rows="3">${esc(state.summary)}</textarea></label>
+    <div class="banner-fake ${state.banner?'has':''}" id="ban">${state.banner?'Banner ✓':'Banner'}</div></div>`;
+  if(step===1) body=`<div class="card stack"><h2>Logistics</h2>
+    <label class="field">Starts<input type="datetime-local" id="st" value="${state.start}"/></label>
+    <label class="field">Ends<input type="datetime-local" id="en" value="${state.end}"/></label>
+    <label class="field">Venue<input id="ve" value="${esc(state.venue)}"/></label>
+    <label class="field">College token<input id="co" value="${esc(state.college)}"/></label>
+    <label class="field">POC<input id="poc" value="${esc(state.poc)}"/></label></div>`;
+  if(step===2) body=`<div class="card stack"><h2>Offer + extras</h2>
+    <p class="muted">Capacity + extras together but sectioned — not a mid-wizard stall wall of unrelated controls.</p>
+    <label class="field">Ticket<select id="tk"><option value="free" ${state.ticket==='free'?'selected':''}>Free</option><option value="paid" ${state.ticket==='paid'?'selected':''}>Paid</option></select></label>
+    <label class="field">Price<input id="pr" value="${esc(state.price)}"/></label>
+    <label class="field">Capacity<input id="cp" value="${esc(state.capacity)}"/></label>
+    <details class="adv"><summary>Advanced ticket rules (kept)</summary>
+      <label class="field">Min–max per order<input id="mm" value="${esc(state.minMax)}"/></label>
+    </details>
+    <details class="adv"><summary>Questions & community links (kept)</summary>
+      <label class="field">Custom question<input id="q" value="${esc(state.questions)}"/></label>
+      <label class="field">Instagram<input id="ig" value="${esc(state.ig)}"/></label>
+      <label class="field">WhatsApp<input id="wa" value="${esc(state.wa)}"/></label>
+    </details></div>`;
+  if(step===3) body=`<div class="card stack"><h2>Review</h2>
+    <div class="card" style="background:#0e1118"><strong>${esc(state.title||'(Untitled)')}</strong>
+    <p class="faint">${esc(state.summary)||'No summary'}</p>
+    <p class="faint">${esc(state.start)} · ${esc(state.venue)} · ₹${esc(state.price)}</p></div>
+    <label class="field"><span><input type="checkbox" id="hide" ${state.hide?'checked':''}/> Hide from All Events</span></label>
+    <label class="field"><span><input type="checkbox" id="ny" ${state.notify?'checked':''}/> Notify members</span></label></div>`;
+  document.getElementById('root').innerHTML=`
+    <p class="step-meta">Full · step ${step+1} of 4 · labeled rail @390</p>
+    <div class="stepper">${rail}</div>${body}
+    <div class="footer-bar"><button class="btn ghost" type="button" id="back">${step===0?'Modes':'Back'}</button>
+    <div style="flex:1"></div>
+    <button class="btn primary" type="button" id="next">${step===3?'Submit for approval':'Next'}</button></div>`;
+  const ban=document.getElementById('ban');
+  if(ban) ban.onclick=()=>{readFull(); state.banner=!state.banner; dirty=true; render();};
+  document.getElementById('back').onclick=()=>{
+    readFull();
+    if(step===0){ askLeaveToPicker(); return; }
+    step--; render();
+  };
+  document.getElementById('next').onclick=()=>{
+    readFull();
+    if(step<3){step++;render(); const on=document.querySelector('.stepper .s.on'); if(on) on.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'}); return;}
+    if(!state.title||!state.banner){showToast('Need title + banner'); step=0; render(); return;}
+    dirty=false; showToast('Full create submitted (fake)');
+  };
+}
+function readFull(){
+  const g=id=>document.getElementById(id);
+  if(g('t')&&step===0){state.title=g('t').value; state.summary=g('su').value; dirty=true;}
+  if(g('st')&&step===1){state.start=g('st').value; state.end=g('en').value; state.venue=g('ve').value; state.college=g('co').value; state.poc=g('poc').value; dirty=true;}
+  if(g('tk')&&step===2){state.ticket=g('tk').value; state.price=g('pr').value; state.capacity=g('cp').value; if(g('mm')) state.minMax=g('mm').value; if(g('q')) state.questions=g('q').value; if(g('ig')) state.ig=g('ig').value; if(g('wa')) state.wa=g('wa').value; dirty=true;}
+  if(g('hide')&&step===3){state.hide=g('hide').checked; state.notify=g('ny').checked; dirty=true;}
+}
+
+function askLeaveToPicker(){
+  if(!dirty && !state.title){ screen='picker'; mode=null; render(); return; }
+  leaveOverlay.classList.add('open');
+}
+function closeLeave(){ leaveOverlay.classList.remove('open'); }
+document.getElementById('leaveCancel').onclick=closeLeave;
+document.getElementById('leaveDiscard').onclick=()=>{
+  closeLeave(); dirty=false; state.title=''; state.banner=false;
+  screen='hub'; mode=null; step=0; showToast('Discarded (fake)'); render();
+};
+document.getElementById('leaveSave').onclick=()=>{
+  closeLeave(); dirty=false; screen='hub'; mode=null; showToast('Draft saved & left (fake)'); render();
+};
+
+document.getElementById('btnDraft').onclick=()=>{ if(mode==='quick') readQuick(); else if(mode==='full') readFull(); dirty=false; showToast('Draft saved (fake)'); };
+document.getElementById('btnCreateHeader').onclick=()=>{screen='picker'; render();};
+render();
+</script>
+</body>
+</html>

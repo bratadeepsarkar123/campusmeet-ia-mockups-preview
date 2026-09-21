@@ -1,1 +1,474 @@
-<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>Option A — Create Event</title><style>body{font:15px system-ui;background:#0b0d12;color:#e8ecf4;margin:auto;padding:16px;max-width:520px}.card{background:#161a24;border:1px solid #2a3142;border-radius:14px;padding:16px;margin:10px 0}input,textarea,button{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #2a3142;background:#12151c;color:#e8ecf4}button{background:#7c6cff;border:0}</style><h1>Create event</h1><p>Option A · progressive disclosure</p><div id="app"></div><script>const s=['Essentials','When & where','Look & POC','Tickets','Questions','Review'];let i=0;function r(){app.innerHTML=`<div class=card><h2>${s[i]}</h2><input placeholder="Event title"><textarea placeholder="Details"></textarea><button onclick="i=Math.min(i+1,5);r()">${i===5?'Submit for approval':'Next'}</button></div><p>Step ${i+1} of 6</p>`}r()</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Option A — Create Event (Progressive Disclosure)</title>
+<style>
+/* CampusMeet Admin+Club IA mockups — Whisperflow-dark, frontend-only */
+:root {
+  --bg: #0b0d12;
+  --bg2: #12151c;
+  --bg3: #1a1f2b;
+  --card: #161a24;
+  --line: #2a3142;
+  --text: #e8ecf4;
+  --muted: #9aa3b5;
+  --faint: #6b7385;
+  --accent: #7c6cff;
+  --accent2: #5eead4;
+  --warn: #fbbf24;
+  --danger: #f87171;
+  --ok: #34d399;
+  --radius: 14px;
+  --shadow: 0 12px 40px rgba(0,0,0,.45);
+  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--font); }
+a { color: var(--accent2); text-decoration: none; }
+button, input, select, textarea { font: inherit; }
+.app {
+  max-width: 1100px; margin: 0 auto; min-height: 100vh;
+  display: grid; grid-template-columns: 1fr;
+}
+@media (min-width: 900px) {
+  .app.with-rail { grid-template-columns: 220px 1fr; }
+}
+.rail {
+  background: var(--bg2); border-right: 1px solid var(--line);
+  padding: 18px 14px; display: none;
+}
+@media (min-width: 900px) { .rail { display: block; } }
+.rail .brand { font-weight: 700; letter-spacing: .02em; margin-bottom: 18px; }
+.rail .brand span { color: var(--accent2); }
+.rail nav a, .rail nav button.navitem {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; text-align: left; background: transparent; border: 0;
+  color: var(--muted); padding: 10px 12px; border-radius: 10px; cursor: pointer; margin-bottom: 4px;
+}
+.rail nav a.active, .rail nav button.navitem.active, .rail nav a:hover, .rail nav button.navitem:hover {
+  background: var(--bg3); color: var(--text);
+}
+.badge {
+  background: var(--accent); color: white; font-size: 11px; font-weight: 700;
+  border-radius: 999px; padding: 2px 7px; min-width: 20px; text-align: center;
+}
+.top {
+  position: sticky; top: 0; z-index: 20; backdrop-filter: blur(10px);
+  background: rgba(11,13,18,.85); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+}
+.top .title { font-weight: 650; flex: 1; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg3); border: 1px solid var(--line); color: var(--muted);
+  border-radius: 999px; padding: 6px 12px; font-size: 12px; cursor: pointer;
+}
+.chip.on { color: var(--text); border-color: var(--accent); background: #1d1a33; }
+.main { padding: 16px; max-width: 780px; margin: 0 auto; width: 100%; }
+.main.wide { max-width: 1100px; }
+.phone {
+  max-width: 390px; margin: 0 auto; border: 1px solid var(--line);
+  border-radius: 24px; overflow: hidden; background: var(--bg);
+  box-shadow: var(--shadow);
+}
+.desk-wrap { display: grid; gap: 20px; }
+@media (min-width: 900px) {
+  .desk-wrap { grid-template-columns: 390px 1fr; align-items: start; }
+}
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px; margin-bottom: 12px;
+}
+.card h2, .card h3 { margin: 0 0 8px; font-size: 16px; }
+.muted { color: var(--muted); font-size: 13px; line-height: 1.45; }
+.faint { color: var(--faint); font-size: 12px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+label.field { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--muted); }
+label.field input, label.field select, label.field textarea {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+  color: var(--text); padding: 11px 12px; outline: none;
+}
+label.field input:focus, label.field select:focus, label.field textarea:focus {
+  border-color: var(--accent);
+}
+.btn {
+  appearance: none; border: 0; border-radius: 12px; padding: 11px 16px;
+  font-weight: 650; cursor: pointer; background: var(--bg3); color: var(--text);
+}
+.btn.primary { background: linear-gradient(135deg, var(--accent), #5b8cff); color: white; }
+.btn.ghost { background: transparent; border: 1px solid var(--line); }
+.btn.ok { background: #0f3d2e; color: var(--ok); border: 1px solid #1f6b4f; }
+.btn.danger { background: #3a1515; color: var(--danger); border: 1px solid #6b2a2a; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.stepper { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 8px; }
+.stepper .s {
+  flex: 0 0 auto; font-size: 11px; padding: 6px 10px; border-radius: 999px;
+  background: var(--bg3); color: var(--faint); border: 1px solid transparent;
+}
+.stepper .s.on { color: var(--text); border-color: var(--accent); background: #1d1a33; }
+.stepper .s.done { color: var(--accent2); }
+.footer-bar {
+  position: sticky; bottom: 0; display: flex; gap: 8px; padding: 12px 0 4px;
+  background: linear-gradient(transparent, var(--bg) 30%);
+}
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+  background: #10231f; border: 1px solid #1f6b4f; color: var(--ok);
+  padding: 12px 16px; border-radius: 12px; opacity: 0; pointer-events: none;
+  transition: .25s ease; z-index: 50; font-size: 13px; box-shadow: var(--shadow);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.adv {
+  border: 1px dashed var(--line); border-radius: 12px; padding: 10px 12px; margin-top: 8px;
+}
+.adv summary { cursor: pointer; color: var(--accent2); font-size: 13px; font-weight: 600; }
+.pill { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: var(--bg3); color: var(--muted); }
+.pill.pending { background: #3a2e10; color: var(--warn); }
+.pill.approved { background: #0f3d2e; color: var(--ok); }
+.pill.rejected { background: #3a1515; color: var(--danger); }
+.pill.needs { background: #1a2740; color: #93c5fd; }
+.list-item {
+  display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 12px;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--bg2);
+  cursor: pointer; margin-bottom: 8px;
+}
+.list-item:hover { border-color: var(--accent); }
+.drawer {
+  position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; z-index: 40;
+  align-items: flex-end; justify-content: center;
+}
+.drawer.open { display: flex; }
+.drawer .panel {
+  width: min(520px, 100%); max-height: 85vh; overflow: auto;
+  background: var(--bg2); border-radius: 18px 18px 0 0; padding: 18px;
+  border: 1px solid var(--line); box-shadow: var(--shadow);
+}
+@media (min-width: 900px) {
+  .drawer { align-items: center; }
+  .drawer .panel { border-radius: 18px; }
+}
+.kanban {
+  display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory;
+}
+.kanban .col {
+  flex: 0 0 260px; scroll-snap-align: start; background: var(--bg2);
+  border: 1px solid var(--line); border-radius: 14px; padding: 10px; min-height: 360px;
+}
+.kanban .col h3 { margin: 0 0 10px; font-size: 13px; color: var(--muted); display:flex; justify-content:space-between; }
+.kcard {
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px; margin-bottom: 8px; cursor: grab;
+}
+.hero {
+  background: linear-gradient(145deg, #1a1440, #0f2a28);
+  border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin-bottom: 12px;
+}
+.task {
+  display: flex; gap: 12px; align-items: flex-start; padding: 14px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--card); margin-bottom: 8px; cursor: pointer;
+}
+.task .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--warn); margin-top: 5px; }
+.task.done .dot { background: var(--ok); }
+.mode {
+  border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: var(--card);
+  cursor: pointer; margin-bottom: 10px;
+}
+.mode:hover, .mode.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.banner-fake {
+  height: 120px; border-radius: 12px; border: 1px dashed var(--line);
+  display: flex; align-items: center; justify-content: center; color: var(--muted);
+  background: repeating-linear-gradient(45deg, #141821, #141821 10px, #181d28 10px, #181d28 20px);
+}
+.banner-fake.has { background: linear-gradient(120deg, #4338ca, #0f766e); color: white; border-style: solid; font-weight: 700; }
+.note {
+  font-size: 11px; color: var(--faint); margin: 8px 0 0; padding: 8px 10px;
+  border-left: 3px solid var(--accent); background: #12151c;
+}
+.hidden { display: none !important; }
+.opt-tag { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent2); }
+
+/* Leave-confirm + hub Create CTA (CRITICAL polish Fri 19) */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 60;
+  display: none; align-items: center; justify-content: center; padding: 16px;
+}
+.overlay.open { display: flex; }
+.overlay .sheet {
+  width: min(400px, 100%); background: var(--bg2); border: 1px solid var(--line);
+  border-radius: 16px; padding: 18px; box-shadow: var(--shadow);
+}
+.overlay .sheet h3 { margin: 0 0 8px; font-size: 16px; }
+.overlay .sheet .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
+.hub-strip {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 12px; margin-bottom: 12px;
+  background: linear-gradient(145deg, #1a1440, #0f2a28);
+  border: 1px solid var(--line); border-radius: 14px;
+}
+.hub-strip .btn.primary { flex: 0 0 auto; }
+.stepper {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.stepper .s {
+  white-space: nowrap;
+  min-width: max-content;
+}
+.step-meta {
+  font-size: 11px; color: var(--faint); margin: 0 0 8px;
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div style="flex:1">
+      <div class="opt-tag">Option A · Progressive disclosure</div>
+      <div class="title" id="topTitle">Club home</div>
+    </div>
+    <button class="btn primary" type="button" id="btnCreateHeader" style="display:none">Create event</button>
+    <button class="btn ghost" type="button" id="btnDraft" style="display:none">Save draft</button>
+    <button class="btn ghost" type="button" id="btnLeave" style="display:none">← Hub</button>
+    <a class="btn ghost" href="admin-approvals.html">Admin →</a>
+  </div>
+  <div class="main" id="root"></div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="overlay" id="leaveOverlay" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <h3>Leave create flow?</h3>
+    <p class="muted">Save a draft to resume later, or discard. (Fake · no backend.)</p>
+    <div class="actions">
+      <button class="btn ghost" type="button" id="leaveCancel">Stay</button>
+      <button class="btn danger" type="button" id="leaveDiscard">Discard</button>
+      <button class="btn primary" type="button" id="leaveSave">Save draft & leave</button>
+    </div>
+  </div>
+</div>
+<script>
+const steps = [
+  {id:'essentials', label:'1 Essentials'},
+  {id:'when', label:'2 When & where'},
+  {id:'look', label:'3 Look & POC'},
+  {id:'tickets', label:'4 Tickets'},
+  {id:'extras', label:'5 Questions'},
+  {id:'review', label:'6 Review'}
+];
+let view = 'hub'; // hub | create
+let i = 0;
+let dirty = false;
+const state = {
+  title:'', summary:'', category:'Workshop', college:'CM-PUNE-01',
+  start:'2026-10-04T17:00', end:'2026-10-04T20:00', venue:'Main Auditorium', online:'',
+  banner:false, pocName:'Asha Verma', pocPhone:'9876543210', pocEmail:'asha@club.edu',
+  ticket:'paid', price:'199', capacity:'200',
+  minOrder:'1', maxOrder:'4', waitlist:false,
+  questions:false, q1:'Dietary preference?', linksIG:'', linksWA:'',
+  hide:false, notify:true
+};
+
+const toast = document.getElementById('toast');
+const leaveOverlay = document.getElementById('leaveOverlay');
+
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'), 1800);
+}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));}
+
+function panelHTML(){
+  const s = steps[i].id;
+  if(s==='essentials') return `
+    <div class="card stack">
+      <h2>Essentials</h2>
+      <p class="muted">Only what attendees need. Advanced stays closed until later — field volume kept.</p>
+      <label class="field">Event title<input id="f_title" value="${esc(state.title)}" placeholder="e.g. HackNight Fall"/></label>
+      <label class="field">Short summary<textarea id="f_summary" rows="3" placeholder="One paragraph">${esc(state.summary)}</textarea></label>
+      <label class="field">Category
+        <select id="f_category"><option ${state.category==='Workshop'?'selected':''}>Workshop</option><option ${state.category==='Fest'?'selected':''}>Fest</option><option ${state.category==='Talk'?'selected':''}>Talk</option></select>
+      </label>
+      <label class="field">College token / code<input id="f_college" value="${esc(state.college)}" placeholder="Resolves official college name"/></label>
+    </div>`;
+  if(s==='when') return `
+    <div class="card stack">
+      <h2>When & where</h2>
+      <label class="field">Starts (IST)<input type="datetime-local" id="f_start" value="${state.start}"/></label>
+      <label class="field">Ends (IST)<input type="datetime-local" id="f_end" value="${state.end}"/></label>
+      <label class="field">Venue<input id="f_venue" value="${esc(state.venue)}"/></label>
+      <label class="field">Online link (optional)<input id="f_online" value="${esc(state.online)}" placeholder="https://…"/></label>
+      <details class="adv"><summary>Advanced schedule</summary>
+        <p class="muted" style="margin-top:8px">Recurrence / multi-day extras kept here — not deleted.</p>
+        <label class="field">Notes<textarea rows="2" placeholder="Doors open 30m early"></textarea></label>
+      </details>
+    </div>`;
+  if(s==='look') return `
+    <div class="card stack">
+      <h2>Look & POC</h2>
+      <div class="banner-fake ${state.banner?'has':''}" id="bannerBox">${state.banner?'Banner attached ✓':'Tap to attach banner (required before submit)'}</div>
+      <button class="btn ghost" type="button" id="btnBanner">Toggle fake banner</button>
+      <div class="row">
+        <button class="btn ghost" type="button" id="btnPoc">Autofill POC from club defaults</button>
+      </div>
+      <label class="field">POC name<input id="f_pocName" value="${esc(state.pocName)}"/></label>
+      <label class="field">POC phone<input id="f_pocPhone" value="${esc(state.pocPhone)}"/></label>
+      <label class="field">POC email<input id="f_pocEmail" value="${esc(state.pocEmail)}"/></label>
+    </div>`;
+  if(s==='tickets') return `
+    <div class="card stack">
+      <h2>Tickets & seats</h2>
+      <p class="muted">Capacity stays lean — no kitchen-sink stall wall. Advanced rules behind disclosure.</p>
+      <label class="field">Type
+        <select id="f_ticket"><option value="free" ${state.ticket==='free'?'selected':''}>Free</option><option value="paid" ${state.ticket==='paid'?'selected':''}>Paid</option></select>
+      </label>
+      <label class="field">Price (₹)<input id="f_price" value="${esc(state.price)}"/></label>
+      <label class="field">Capacity<input id="f_capacity" value="${esc(state.capacity)}"/></label>
+      <details class="adv"><summary>Advanced ticket rules (kept · not deleted)</summary>
+        <div class="stack" style="margin-top:8px">
+          <label class="field">Min per order<input id="f_min" value="${esc(state.minOrder)}"/></label>
+          <label class="field">Max per order<input id="f_max" value="${esc(state.maxOrder)}"/></label>
+          <label class="field"><span><input type="checkbox" id="f_wait" ${state.waitlist?'checked':''}/> Enable waitlist</span></label>
+          <p class="faint">Sub-event / bundle controls only if multi mode — not dumped on capacity.</p>
+        </div>
+      </details>
+    </div>`;
+  if(s==='extras') return `
+    <div class="card stack">
+      <h2>Questions & links</h2>
+      <label class="field"><span><input type="checkbox" id="f_q" ${state.questions?'checked':''}/> Collect custom attendee questions</span></label>
+      <label class="field">Question 1<input id="f_q1" value="${esc(state.q1)}"/></label>
+      <p class="muted">Community links live here (and Review) — not on every step.</p>
+      <label class="field">Instagram<input id="f_ig" value="${esc(state.linksIG)}" placeholder="@club"/></label>
+      <label class="field">WhatsApp community<input id="f_wa" value="${esc(state.linksWA)}" placeholder="https://chat.whatsapp.com/…"/></label>
+    </div>`;
+  return `
+    <div class="card stack">
+      <h2>Review & visibility</h2>
+      <p class="muted">Visibility sits here — not buried in Capacity.</p>
+      <div class="card" style="background:#0e1118">
+        <div class="row"><strong>${esc(state.title||'(Untitled)')}</strong> <span class="pill">${esc(state.category)}</span></div>
+        <p class="muted">${esc(state.summary||'No summary yet')}</p>
+        <p class="faint">${esc(state.start)} → ${esc(state.end)} · ${esc(state.venue)}</p>
+        <p class="faint">₹${esc(state.price)} · cap ${esc(state.capacity)} · POC ${esc(state.pocName)}</p>
+        <p class="faint">Banner: ${state.banner?'yes':'MISSING'} · College: ${esc(state.college)}</p>
+      </div>
+      <label class="field"><span><input type="checkbox" id="f_hide" ${state.hide?'checked':''}/> Hide from All Events (unlisted after approval)</span></label>
+      <label class="field"><span><input type="checkbox" id="f_notify" ${state.notify?'checked':''}/> Notify club members on approval</span></label>
+    </div>`;
+}
+
+function readFields(){
+  const g = id => document.getElementById(id);
+  if(!g('f_title') && !g('f_start') && !g('f_pocName') && !g('f_ticket') && !g('f_q') && !g('f_hide')) return;
+  const s = steps[i].id;
+  if(s==='essentials' && g('f_title')){ state.title=g('f_title').value; state.summary=g('f_summary').value; state.category=g('f_category').value; state.college=g('f_college').value; dirty=true; }
+  if(s==='when' && g('f_start')){ state.start=g('f_start').value; state.end=g('f_end').value; state.venue=g('f_venue').value; state.online=g('f_online').value; dirty=true; }
+  if(s==='look' && g('f_pocName')){ state.pocName=g('f_pocName').value; state.pocPhone=g('f_pocPhone').value; state.pocEmail=g('f_pocEmail').value; dirty=true; }
+  if(s==='tickets' && g('f_ticket')){ state.ticket=g('f_ticket').value; state.price=g('f_price').value; state.capacity=g('f_capacity').value; state.minOrder=g('f_min')?.value||state.minOrder; state.maxOrder=g('f_max')?.value||state.maxOrder; state.waitlist=!!g('f_wait')?.checked; dirty=true; }
+  if(s==='extras' && g('f_q')){ state.questions=!!g('f_q').checked; state.q1=g('f_q1').value; state.linksIG=g('f_ig').value; state.linksWA=g('f_wa').value; dirty=true; }
+  if(s==='review' && g('f_hide')){ state.hide=!!g('f_hide').checked; state.notify=!!g('f_notify').checked; dirty=true; }
+}
+
+function bindPanel(){
+  const banner = document.getElementById('btnBanner');
+  if(banner) banner.onclick = ()=>{ state.banner=!state.banner; dirty=true; render(); };
+  const box = document.getElementById('bannerBox');
+  if(box) box.onclick = ()=>{ state.banner=!state.banner; dirty=true; render(); };
+  const poc = document.getElementById('btnPoc');
+  if(poc) poc.onclick = ()=>{ state.pocName='Asha Verma'; state.pocPhone='9876543210'; state.pocEmail='asha@club.edu'; dirty=true; showToast('POC autofilled (fake)'); render(); };
+}
+
+function renderHub(){
+  document.getElementById('topTitle').textContent = 'Club home';
+  document.getElementById('btnCreateHeader').style.display = '';
+  document.getElementById('btnDraft').style.display = 'none';
+  document.getElementById('btnLeave').style.display = 'none';
+  document.getElementById('root').innerHTML = `
+    <div class="hub-strip">
+      <div style="flex:1">
+        <div class="opt-tag">Demo Robotics · first fold</div>
+        <strong>Create is here — not 5.5 screens down</strong>
+        <p class="faint" style="margin:4px 0 0">Stats demoted below. Sticky Create also in header.</p>
+      </div>
+      <button class="btn primary" type="button" id="heroCreate">Create event</button>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><strong>Welcome stats</strong><span class="faint">below Create</span></div>
+      <p class="muted">Views · RSVPs · GMV live under the primary action (not above it).</p>
+      <div class="row"><span class="pill">Views 1.2k</span><span class="pill">RSVPs 84</span><span class="pill">Drafts 1</span></div>
+    </div>
+    <p class="note">CRITICAL fix mock: Create CTA first fold + header. Save draft + leave-confirm in wizard. Capacity lean with advanced disclosure. Labeled scrollable stepper @390.</p>`;
+  document.getElementById('heroCreate').onclick = startCreate;
+}
+
+function startCreate(){
+  view='create'; i=0; dirty=false; render();
+}
+
+function renderCreate(){
+  document.getElementById('topTitle').textContent = 'Create event';
+  document.getElementById('btnCreateHeader').style.display = 'none';
+  document.getElementById('btnDraft').style.display = '';
+  document.getElementById('btnLeave').style.display = '';
+  const rail = steps.map((s,idx)=>`<div class="s ${idx===i?'on':''} ${idx<i?'done':''}">${s.label}</div>`).join('');
+  document.getElementById('root').innerHTML = `
+    <div class="note">Frontend-only mock · fake data · Whisperflow-dark</div>
+    <p class="step-meta">Step ${i+1} of ${steps.length} · swipe/scroll rail if needed @390 — labeled, not bare dots</p>
+    <div class="stepper" id="stepper">${rail}</div>
+    <div id="panels">${panelHTML()}</div>
+    <div class="footer-bar">
+      <button class="btn ghost" type="button" id="btnBack">${i===0?'← Hub':'Back'}</button>
+      <div style="flex:1"></div>
+      <button class="btn primary" type="button" id="btnNext">${i===steps.length-1?'Submit for approval':'Next'}</button>
+    </div>`;
+  bindPanel();
+  document.getElementById('btnBack').onclick = ()=>{
+    readFields();
+    if(i===0){ askLeave(); return; }
+    i--; render();
+  };
+  document.getElementById('btnNext').onclick = ()=>{
+    readFields();
+    if(i===steps.length-1){
+      if(!state.title.trim()){ showToast('Add a title first'); return; }
+      if(!state.banner){ showToast('Banner still required — jump to Look & POC'); i=2; render(); return; }
+      dirty=false; showToast('Submitted for approval (fake · no backend)');
+      return;
+    }
+    i++; render();
+    // keep active step in view @390
+    const on = document.querySelector('.stepper .s.on');
+    if(on) on.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+  };
+}
+
+function askLeave(){
+  readFields();
+  if(!dirty && !state.title){ view='hub'; render(); return; }
+  leaveOverlay.classList.add('open');
+}
+function closeLeave(){ leaveOverlay.classList.remove('open'); }
+
+document.getElementById('leaveCancel').onclick = closeLeave;
+document.getElementById('leaveDiscard').onclick = ()=>{
+  closeLeave(); dirty=false;
+  state.title=''; state.summary=''; state.banner=false;
+  view='hub'; showToast('Discarded (fake)'); render();
+};
+document.getElementById('leaveSave').onclick = ()=>{
+  closeLeave(); dirty=false; view='hub'; showToast('Draft saved & left (fake)'); render();
+};
+
+document.getElementById('btnDraft').onclick = ()=>{ readFields(); dirty=false; showToast('Draft saved locally (fake)'); };
+document.getElementById('btnLeave').onclick = askLeave;
+document.getElementById('btnCreateHeader').onclick = startCreate;
+
+function render(){ view==='hub'?renderHub():renderCreate(); }
+render();
+</script>
+</body>
+</html>
